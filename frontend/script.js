@@ -61,6 +61,12 @@ function findEllipse(canvasId) {
     return largestEllipse;
 }
 
+function wait50Milliseconds() {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {resolve(true)}, 50);
+    })
+}
+
 // Config Variables
 const intervalSeconds = 1; // seconds
 
@@ -75,6 +81,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     let stream;
 
     // Wait for OpenCV to be loaded
+    let cvIsLoaded = false;
+    while (!cvIsLoaded){
+        try {
+            cv;
+        } catch {
+            console.log("Waiting for CV to be loaded...");
+            await wait50Milliseconds();
+        }
+    }
     cv = (cv instanceof Promise) ? await cv : cv;
     
     // Setup canvas context
