@@ -215,8 +215,8 @@ if __name__ == "__main__":
             raw_pos = data.get("position")
             raw_rgb = data.get("color")
             new_has_cockroach = True if data.get("has_cockroach") else False
-            prev_has_cockroach = True if data.get("has_cockroach") else False
             has_cockroach = new_has_cockroach and prev_has_cockroach
+            prev_has_cockroach = True if data.get("has_cockroach") else False
             try:
                 cur_pos = (raw_pos[0], raw_pos[1])
             except:
