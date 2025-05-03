@@ -33,5 +33,3 @@ function findEllipse(img) {
   // return img;
   return largestEllipse;
 }
-
-module.exports = { findEllipse };

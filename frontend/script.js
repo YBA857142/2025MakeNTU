@@ -17,50 +17,65 @@ function brownFilter(canvasId) {
     upperBrown.delete();
   
     return mask;
-  }
+}
+
+function findEllipse(canvasId) {
+    const brownMask = brownFilter(canvasId);
+    const blurred = new cv.Mat();
+    cv.GaussianBlur(brownMask, blurred, new cv.Size(5, 5), 0);
+    const edges = new cv.Mat();
+    cv.Canny(blurred, edges, 50, 150);
   
-  function findEllipse(img) {
-    const brownMask = brownFilter(img);
-    const blurred = brownMask.gaussianBlur(new cv.Size(5, 5), 0);
-    const edges = blurred.canny(50, 150);
+    const contours = new cv.MatVector();
+    const hierarchy = new cv.Mat();
+    cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
   
-    const contours = edges.findContours(cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
     let largestEllipse = null;
     let maxArea = 0;
   
-    for (let contour of contours) {
-      if (contour.numPoints >= 5) {
-        const ellipse = contour.fitEllipse();
-        const area = Math.PI * (ellipse.axes.width / 2) * (ellipse.axes.height / 2);
-        if (area > maxArea) {
-          maxArea = area;
-          largestEllipse = ellipse;
+    for (let i = 0; i < contours.size(); ++i) {
+        const contour = contours.get(i);
+        if (contour.data32S.length / 2 >= 5) { // Ensure at least 5 points for fitEllipse
+            const rotatedRect = cv.fitEllipse(contour);
+            const ellipse = {
+            center: rotatedRect.center,
+            axes: rotatedRect.size,
+            angle: rotatedRect.angle
+            };
+            const area = Math.PI * (ellipse.axes.width / 2) * (ellipse.axes.height / 2);
+            if (area > maxArea) {
+            maxArea = area;
+            largestEllipse = ellipse;
+            }
+            contour.delete();
         }
-      }
     }
   
-    // if (largestEllipse) {
-      // img.drawEllipse(largestEllipse, new cv.Vec(0, 255, 0), 2, cv.LINE_8);
-    // }
+    brownMask.delete();
+    blurred.delete();
+    edges.delete();
+    contours.delete();
+    hierarchy.delete();
   
-    // return img;
     console.log(largestEllipse);
     return largestEllipse;
-  }
+}
 
 // Config Variables
 const intervalSeconds = 1; // seconds
 
 // Main function
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
-    const intervalInput = document.getElementById('interval');
     const toggleBtn = document.getElementById('toggleBtn');
     const statusDiv = document.getElementById('status');
     
     let captureInterval;
     let stream;
+
+    // Wait for OpenCV to be loaded
+    cv = (cv instanceof Promise) ? await cv : cv;
     
     // Setup canvas context
     const context = canvas.getContext('2d');
@@ -118,11 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Convert canvas to image data URL
         const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
         
-        // Update the captured image preview
-        // capturedImage.src = imageDataUrl;
-        
         // Send the image to the server
-        sendImageToServer(imageDataUrl);
+        // sendImageToServer(imageDataUrl);
         
         return imageDataUrl;
     }
@@ -177,16 +189,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Schedule periodic captures
         captureInterval = setInterval(captureImage, intervalSeconds * 1000);
         
-        intervalInput.disabled = true;
-        
         showStatus(`Capture started with ${intervalSeconds} second interval`, 'success');
     }
     
     // Stop periodic capture
     function stopCapture() {
         clearInterval(captureInterval);
-
-        intervalInput.disabled = false;
         
         showStatus('Capture stopped', 'success');
     }
