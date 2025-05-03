@@ -317,77 +317,92 @@ document.addEventListener('DOMContentLoaded', async () => {
         stopCamera();
     });
 
-    let currentHeading = 0;  // global to hold the latest compass heading
+    let currentHeading = 0;  // Compass heading
+    let motionData = { x: 0, y: 0, z: 0 };  // Accelerometer data
 
-    // 1) Hook up the deviceorientation event to keep currentHeading up to date
+    // 1) Device orientation for compass heading
     if (window.DeviceOrientationEvent) {
     window.addEventListener('deviceorientation', event => {
-        // On iOS you may need to ask for permission first; if webkitCompassHeading exists use it:
         if (typeof event.webkitCompassHeading === 'number') {
-        // iOS Safari
         currentHeading = event.webkitCompassHeading;
         } else if (event.absolute === true && event.alpha !== null) {
-        // Some Android & other browsers give absolute headings
         currentHeading = event.alpha;
         } else if (event.alpha !== null) {
-        // Fallback to relative alpha
         currentHeading = event.alpha;
         }
     }, true);
     } else {
-    console.warn('DeviceOrientationEvent is not supported in your browser');
+    console.warn('DeviceOrientationEvent is not supported');
     }
 
-    // … then inside your existing captureImage() function, after drawing the ellipse …
+    // 2) Device motion for acceleration
+    if (window.DeviceMotionEvent) {
+    window.addEventListener('devicemotion', event => {
+        if (event.accelerationIncludingGravity) {
+        motionData.x = event.accelerationIncludingGravity.x || 0;
+        motionData.y = event.accelerationIncludingGravity.y || 0;
+        motionData.z = event.accelerationIncludingGravity.z || 0;
+        }
+    }, true);
+    } else {
+    console.warn('DeviceMotionEvent is not supported');
+    }
 
+    // 3) Your existing captureImage() with additions
     function captureImage() {
-    // draw the video frame + ellipse as before…
+    // Draw video and ellipse
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     const ellipse = findEllipse(canvas);
     if (ellipse) {
         context.beginPath();
         context.ellipse(
         ellipse.center.x, ellipse.center.y,
-        ellipse.axes.width/2, ellipse.axes.height/2,
-        0, 0, 2*Math.PI
+        ellipse.axes.width / 2, ellipse.axes.height / 2,
+        0, 0, 2 * Math.PI
         );
         context.strokeStyle = 'red';
         context.lineWidth = 2;
         context.stroke();
     }
 
-    // 2) Draw compass in top‑right corner
-    const cx = canvas.width - 60;   // center x of compass
-    const cy = 60;                  // center y of compass
+    // Draw compass
+    const cx = canvas.width - 60;
+    const cy = 60;
     const radius = 50;
 
-    // draw outer circle
     context.save();
     context.beginPath();
-    context.arc(cx, cy, radius, 0, 2*Math.PI);
+    context.arc(cx, cy, radius, 0, 2 * Math.PI);
     context.strokeStyle = '#0099ff';
     context.lineWidth = 3;
     context.stroke();
 
-    // draw N label
     context.fillStyle = '#0099ff';
     context.font = '16px sans-serif';
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     context.fillText('N', cx, cy - radius + 16);
 
-    // rotate and draw needle
     context.translate(cx, cy);
-    context.rotate(-currentHeading * Math.PI/180);  // negative so that 0° (north) points up
+    context.rotate(-currentHeading * Math.PI / 180);
     context.beginPath();
-    context.moveTo(0, 10);       // a little tail at bottom
-    context.lineTo(0, -radius + 10);  // point up to edge
+    context.moveTo(0, 10);
+    context.lineTo(0, -radius + 10);
     context.strokeStyle = 'crimson';
     context.lineWidth = 4;
     context.stroke();
     context.restore();
 
-    // … your existing code to encode image and send to server …
+    // 4) Draw motion data in top-left corner
+    context.fillStyle = '#00cc66';
+    context.font = '14px monospace';
+    context.textAlign = 'left';
+    context.textBaseline = 'top';
+    context.fillText(`Accel X: ${motionData.x.toFixed(2)}`, 10, 10);
+    context.fillText(`Accel Y: ${motionData.y.toFixed(2)}`, 10, 30);
+    context.fillText(`Accel Z: ${motionData.z.toFixed(2)}`, 10, 50);
+
+    // Send to server
     const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
     return imageDataUrl;
     }
