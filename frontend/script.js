@@ -1,50 +1,6 @@
 // Config Variables
 const intervalSeconds = 0.2; // seconds
 
-// Modify the startCamera function like this:
-async function startCamera() {
-    try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoDevices = devices.filter(device => device.kind === 'videoinput');
-
-        if (videoDevices.length === 0) {
-            throw new Error('No video input devices found.');
-        }
-
-        let selectedDeviceId = null;
-
-        for (const device of videoDevices) {
-            const confirmUse = window.confirm(`Use this camera?\nLabel: ${device.label || '(unlabeled device)'}`);
-            if (confirmUse) {
-                selectedDeviceId = device.deviceId;
-                break;
-            }
-        }
-
-        // If the user didn't confirm any camera, use the first one as fallback
-        if (!selectedDeviceId) {
-            console.warn('No camera confirmed. Using the first available camera.');
-            selectedDeviceId = videoDevices[0].deviceId;
-        }
-
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: { deviceId: selectedDeviceId }
-        });
-
-        video.srcObject = stream;
-
-        video.onloadedmetadata = () => {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-        };
-
-        showStatus('Camera started successfully', 'success');
-    } catch (err) {
-        showStatus(`Error accessing camera: ${err.message}`, 'error');
-        alert(`Error accessing camera: ${err.message}`);
-    }
-}
-
 // Update the toggle button event listener to call the modified startCamera function:
 toggleBtn.addEventListener('click', () => {
     toggleButtonText();
@@ -165,33 +121,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Start the camera
     async function startCamera() {
-        const targetCameraLabel = 'camera2 2, facing back'; // Replace with the exact label of the camera you want
-    
         try {
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
-            let selectedDeviceId;
+    
+            if (videoDevices.length === 0) {
+                throw new Error('No video input devices found.');
+            }
+    
+            let selectedDeviceId = null;
     
             for (const device of videoDevices) {
-                if (device.label && device.label.includes(targetCameraLabel)) {
+                const confirmUse = window.confirm(`Use this camera?\nLabel: ${device.label || '(unlabeled device)'}`);
+                if (confirmUse) {
                     selectedDeviceId = device.deviceId;
                     break;
                 }
             }
     
-            if (!selectedDeviceId && videoDevices.length > 0) {
-                alert(`Camera with label "${targetCameraLabel}" not found. Using the first available camera.`);
+            // If the user didn't confirm any camera, use the first one as fallback
+            if (!selectedDeviceId) {
+                console.warn('No camera confirmed. Using the first available camera.');
                 selectedDeviceId = videoDevices[0].deviceId;
-            } else if (!selectedDeviceId) {
-                alert('No video input devices found.');
             }
     
-            stream = await navigator.mediaDevices.getUserMedia({
+            const stream = await navigator.mediaDevices.getUserMedia({
                 video: { deviceId: selectedDeviceId }
             });
+    
             video.srcObject = stream;
     
-            // Set canvas dimensions once we have video dimensions
             video.onloadedmetadata = () => {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
@@ -200,7 +159,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             showStatus('Camera started successfully', 'success');
         } catch (err) {
             showStatus(`Error accessing camera: ${err.message}`, 'error');
-            alert('Error accessing camera:', err);
+            alert(`Error accessing camera: ${err.message}`);
         }
     }
     
@@ -338,4 +297,4 @@ async function displayCameras() {
   }
   
   // Call the function to display the alert
-  displayCameras();
+//   displayCameras();
