@@ -29,9 +29,9 @@ def set_strip_color(strip, prev_rgb, cur_rgb, has_hit):
         g = max(0, min(255, cur_rgb[1])) - prev_rgb[1]
         b = max(0, min(255, cur_rgb[2])) - prev_rgb[2]
         dcolor = (r ** 2 + g ** 2 + b ** 2) ** 0.5 + 1
-        r = int(r * min(dcolor, 51.2) / dcolor + prev_rgb[0])
-        g = int(g * min(dcolor, 51.2) / dcolor + prev_rgb[1])
-        b = int(b * min(dcolor, 51.2) / dcolor + prev_rgb[2])
+        r = int(r * min(dcolor, 5.12) / dcolor + prev_rgb[0])
+        g = int(g * min(dcolor, 5.12) / dcolor + prev_rgb[1])
+        b = int(b * min(dcolor, 5.12) / dcolor + prev_rgb[2])
         for i in range(strip.numPixels()-1):
             strip.setPixelColor(i, Color(r, g, b))
     strip.show()
