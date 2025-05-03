@@ -67,6 +67,9 @@ function findEllipse(canvasId) {
                 if (ellipse.center.y < Math.floor(canvas.height / 10)) {
                     continue;
                 }
+                if (ellipse.center.y > Math.floor(canvas.height * 8.5 / 10)) {
+                    continue;
+                }
                 if (area > maxArea) {
                     maxArea = area;
                     largestEllipse = ellipse;
