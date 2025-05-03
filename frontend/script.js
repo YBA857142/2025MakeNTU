@@ -1,7 +1,10 @@
+// Config Variables
+const intervalSeconds = 1; // seconds
+
+// Main function
 document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
-    const capturedImage = document.getElementById('capturedImage');
     const intervalInput = document.getElementById('interval');
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
@@ -51,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
         
         // Update the captured image preview
-        capturedImage.src = imageDataUrl;
+        // capturedImage.src = imageDataUrl;
         
         // Send the image to the server
         sendImageToServer(imageDataUrl);
@@ -102,12 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Start periodic capture
     function startCapture() {
-        const intervalSeconds = parseInt(intervalInput.value, 10);
-        
-        if (isNaN(intervalSeconds) || intervalSeconds < 1) {
-            showStatus('Please enter a valid interval (min 1 second)', 'error');
-            return;
-        }
         
         // Initial capture
         captureImage();

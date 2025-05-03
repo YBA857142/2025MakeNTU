@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__, static_folder='frontend', static_url_path='')
 
 # Create directory to store captured images
-IMAGES_DIR = 'captured_images'
+IMAGES_DIR = 'images_working'
 os.makedirs(IMAGES_DIR, exist_ok=True)
 
 # Serve static files (HTML, CSS, JS) from /frontend
