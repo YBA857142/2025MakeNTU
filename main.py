@@ -68,7 +68,7 @@ if __name__ == "__main__":
     strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
     strip.begin()
 
-    call_rpi = False
+    run_rpi = False
     for i in range(strip.numPixels()-1):
         strip.setPixelColor(i, Color(255, 0, 0))
     strip.show()
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     strip.setPixelColor(idx, Color(255, 0, 0))
     strip.show()
     time.sleep(0.25)
-    call_rpi = True
+    run_rpi = True
 
     """ ==============================
                 SERVO MOTOR
