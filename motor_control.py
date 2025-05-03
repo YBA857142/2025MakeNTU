@@ -5,7 +5,7 @@ def motor_control(c0, c1, has_cockroach, predict, pwm_A, pwm_B, AIN1, AIN2, BIN1
     # c1: current coordinates
     # has_cockroach: 0 if no cockroach
     # predict: 0 if not steering, -1 if left, +1 if right
-    print(predict)
+    
     if (has_cockroach == 0):
         move(predict, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
         return predict
