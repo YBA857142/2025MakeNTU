@@ -209,6 +209,7 @@ if __name__ == "__main__":
             except:
                 return jsonify({"error": "Wrong color format"})
             
+            print(raw_pos, raw_rgb, has_cockroach)
             call_rpi()
             
             return jsonify({"status": "success"})
