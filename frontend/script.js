@@ -130,11 +130,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
     
             let selectedDeviceId = null;
-    
-            for (const device of videoDevices) {
-                const confirmUse = window.confirm(`Use this camera?\nLabel: ${device.label || '(unlabeled device)'}`);
-                if (confirmUse) {
-                    selectedDeviceId = device.deviceId;
+
+            for (let i = videoDevices.length - 1; i >= 0; i--) {
+                const device = videoDevices[i];
+                selectedDeviceId = device.deviceId;
+                if (selectedDeviceId){
                     break;
                 }
             }
