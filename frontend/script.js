@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     while (!cvIsLoaded){
         try {
             cv;
+            cvIsLoaded = true;
         } catch {
             console.log("Waiting for CV to be loaded...");
             await wait50Milliseconds();
