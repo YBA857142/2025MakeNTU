@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 def motor_tt(scale, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2):
-    scale0 = 1.1
+    scale0 = 3
     speed_A = scale0 + scale
     speed_B = scale0 - scale
     pwm_A.ChangeDutyCycle(100 * speed_A / max(speed_B, speed_A))
