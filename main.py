@@ -242,9 +242,9 @@ if __name__ == "__main__":
     @app.route('/api/stop', methods=['POST'])
     def stop_program():
         global run_rpi
-        run_rpi = False
-        stop_rpi()
-        print("STOPPED PROGRAM VIA API CALL")
+        # run_rpi = False
+        # stop_rpi()
+        # print("STOPPED PROGRAM VIA API CALL")
         return jsonify({"success": True})
     
     @app.route('/api/run', methods=['POST'])
