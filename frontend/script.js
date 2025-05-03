@@ -1,5 +1,5 @@
 // Config Variables
-const intervalSeconds = 0.02; // seconds
+const intervalSeconds = 0.05; // seconds
 
 // Update the toggle button event listener to call the modified startCamera function:
 toggleBtn.addEventListener('click', () => {
