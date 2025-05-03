@@ -1,3 +1,6 @@
+// Config Variables
+const intervalSeconds = 0.2; // seconds
+
 // Same brown filter and ellipse detection logic
 function brownFilter(canvasId) {
     const img = cv.imread(canvasId);  // get OpenCV Mat from canvas
@@ -67,8 +70,7 @@ function wait50Milliseconds() {
     })
 }
 
-// Config Variables
-const intervalSeconds = 1; // seconds
+
 
 // Main function
 document.addEventListener('DOMContentLoaded', async () => {
