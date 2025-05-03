@@ -1,0 +1,27 @@
+main.py
+main()
+    setup()
+    r = 3
+    while 1:
+        if pos_list[-1][0] ** 2 + pos_list[-1][1] ** 2 <= r: // hit cockroach
+            motor_servo()
+            break
+        else:
+            rpi(pos_list, rgb_list, has_cockroach)
+    finish()
+
+pos_list: list(tuple(int, int) * 5)
+rgb_list: list(tuple(int, int, int) * 2)
+has_cockroach: bool
+
+=======
+
+rpi.py
+motor_control(pos_list, has_cockroach)
+led(rgb_list)
+
+=======
+
+
+
+motor_tt()
