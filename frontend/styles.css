@@ -13,12 +13,14 @@ body {
 }
 
 #video {
+    display: none;
     width: 100%;
     border: 1px solid #ccc;
 }
 
 #canvas {
-    display: none;
+    width: 100%;
+    border: 1px solid #ccc;
 }
 
 .controls {
