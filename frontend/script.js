@@ -1,6 +1,61 @@
 // Config Variables
 const intervalSeconds = 0.2; // seconds
 
+// Modify the startCamera function like this:
+async function startCamera() {
+    const targetCameraLabel = 'camera2 2, facing back'; // Replace with the exact label of the camera you want
+
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        let selectedDeviceId;
+
+        for (const device of videoDevices) {
+            if (device.label && device.label.includes(targetCameraLabel)) {
+                selectedDeviceId = device.deviceId;
+                break;
+            }
+        }
+
+        if (!selectedDeviceId && videoDevices.length > 0) {
+            console.warn(`Camera with label "${targetCameraLabel}" not found. Using the first available camera.`);
+            selectedDeviceId = videoDevices[0].deviceId;
+        } else if (!selectedDeviceId) {
+            throw new Error('No video input devices found.');
+        }
+
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: { deviceId: selectedDeviceId }
+        });
+        video.srcObject = stream;
+
+        // Set canvas dimensions once we have video dimensions
+        video.onloadedmetadata = () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+        };
+
+        showStatus('Camera started successfully', 'success');
+    } catch (err) {
+        showStatus(`Error accessing camera: ${err.message}`, 'error');
+        console.error('Error accessing camera:', err);
+    }
+}
+
+// Update the toggle button event listener to call the modified startCamera function:
+toggleBtn.addEventListener('click', () => {
+    toggleButtonText();
+    if (toggleBtn.isOn){
+        startCamera().then(() => { // Call the modified startCamera function
+            // Wait a bit for camera to initialize before starting capture
+            setTimeout(startCapture, 1000);
+        });
+    } else {
+        stopCapture();
+        stopCamera();
+    }
+});
+
 // Same brown filter and ellipse detection logic
 function brownFilter(canvasId) {
     const img = cv.imread(canvasId);  // get OpenCV Mat from canvas
@@ -107,18 +162,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Start the camera
     async function startCamera() {
+        const targetCameraLabel = 'camera2 2, facing back'; // Replace with the exact label of the camera you want
+    
         try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            let selectedDeviceId;
+    
+            for (const device of videoDevices) {
+                if (device.label && device.label.includes(targetCameraLabel)) {
+                    selectedDeviceId = device.deviceId;
+                    break;
+                }
+            }
+    
+            if (!selectedDeviceId && videoDevices.length > 0) {
+                console.warn(`Camera with label "${targetCameraLabel}" not found. Using the first available camera.`);
+                selectedDeviceId = videoDevices[0].deviceId;
+            } else if (!selectedDeviceId) {
+                throw new Error('No video input devices found.');
+            }
+    
             stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'environment' }
+                video: { deviceId: selectedDeviceId }
             });
             video.srcObject = stream;
-            
+    
             // Set canvas dimensions once we have video dimensions
             video.onloadedmetadata = () => {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
             };
-            
+    
             showStatus('Camera started successfully', 'success');
         } catch (err) {
             showStatus(`Error accessing camera: ${err.message}`, 'error');
@@ -217,7 +292,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         showStatus('Capture stopped', 'success');
     }
     
-    // Event listeners
+    
+    // Event Listener
     toggleBtn.addEventListener('click', () => {
         toggleButtonText();
         if (toggleBtn.isOn){
