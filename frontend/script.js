@@ -3,7 +3,7 @@ const intervalSeconds = 0.2; // seconds
 
 // Modify the startCamera function like this:
 async function startCamera() {
-    const targetCameraLabel = 'camera2 0, facing back'; // Replace with the exact label of the camera you want
+    const targetCameraLabel = 'camera2 1, facing front'; // Replace with the exact label of the camera you want
 
     try {
         const devices = await navigator.mediaDevices.enumerateDevices();
@@ -16,6 +16,8 @@ async function startCamera() {
                 break;
             }
         }
+
+        selectedDeviceId = videoDevices[1].deviceId;
 
         if (!selectedDeviceId && videoDevices.length > 0) {
             console.warn(`Camera with label "${targetCameraLabel}" not found. Using the first available camera.`);
