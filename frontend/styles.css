@@ -42,6 +42,14 @@ body {
     border: 2px solid rgb(200, 200, 200);
 }
 
+.buttonOn {
+    opacity: 30%;   
+}
+
+.buttonOff {
+    opacity: 100%;
+}
+
 #status {
     position: relative;
 }

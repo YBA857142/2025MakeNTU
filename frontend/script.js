@@ -1,5 +1,5 @@
 // Config Variables
-const intervalSeconds = 0.2; // seconds
+const intervalSeconds = 0.05; // seconds
 
 // Update the toggle button event listener to call the modified startCamera function:
 toggleBtn.addEventListener('click', () => {
@@ -113,9 +113,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const context = canvas.getContext('2d');
     
     toggleBtn.isOn = false;
+    toggleBtn.classList.add("buttonOff");
     function toggleButtonText(){
         toggleBtn.isOn = !toggleBtn.isOn;
         toggleBtn.innerHTML = toggleBtn.isOn ? "Stop Capture" : "Start Capture";
+        if (toggleBtn.isOn){
+            toggleBtn.classList.add("buttonOn");
+            toggleBtn.classList.remove("buttonOff");
+        } else {
+            toggleBtn.classList.add("buttonOff");
+            toggleBtn.classList.remove("buttonOn");
+        }
         return toggleBtn.isOn;
     }
     
@@ -277,24 +285,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 
-async function displayCameras() {
-    try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const cameras = devices.filter(device => device.kind === 'videoinput');
+// async function displayCameras() {
+//     try {
+//       const devices = await navigator.mediaDevices.enumerateDevices();
+//       const cameras = devices.filter(device => device.kind === 'videoinput');
   
-      if (cameras.length > 0) {
-        let cameraList = "Available Cameras:\n";
-        cameras.forEach((camera, index) => {
-          cameraList += `${index + 1}. ${camera.label || `Camera ${index + 1}`}\n`;
-        });
-        alert(cameraList);
-      } else {
-        alert("No cameras found on this device.");
-      }
-    } catch (error) {
-      alert(`Error accessing camera information: ${error}`);
-    }
-  }
+//       if (cameras.length > 0) {
+//         let cameraList = "Available Cameras:\n";
+//         cameras.forEach((camera, index) => {
+//           cameraList += `${index + 1}. ${camera.label || `Camera ${index + 1}`}\n`;
+//         });
+//         alert(cameraList);
+//       } else {
+//         alert("No cameras found on this device.");
+//       }
+//     } catch (error) {
+//       alert(`Error accessing camera information: ${error}`);
+//     }
+//   }
   
   // Call the function to display the alert
 //   displayCameras();
