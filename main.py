@@ -5,11 +5,11 @@ from datetime import datetime
 import logging
 import RPi.GPIO as GPIO
 import time
-from rpi.motor_tt import motor_tt
-from rpi.led import set_strip_color, clear_strip
+from motor_tt import motor_tt
+from led import set_strip_color, clear_strip
 from rpi_ws281x import PixelStrip, Color
-from rpi.motor_servo import motor_servo
-from rpi.motor_control import motor_control
+from motor_servo import motor_servo
+from motor_control import motor_control
 
 
 # Set up logging
