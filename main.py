@@ -3,6 +3,12 @@ import os
 import base64
 from datetime import datetime
 import logging
+import RPi.GPIO as GPIO
+import time
+from rpi.motor_tt import motor_tt
+from rpi.led import set_strip_color, clear_strip
+from rpi_ws281x import PixelStrip, Color
+from rpi.motor_servo import motor_servo
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -15,25 +21,114 @@ IMAGES_DIR = 'images_working'
 os.makedirs(IMAGES_DIR, exist_ok=True)
 
 """
-██╗   ██╗████████╗██╗██╗     ██╗████████╗██╗   ██╗
-██║   ██║╚══██╔══╝██║██║     ██║╚══██╔══╝╚██╗ ██╔╝
-██║   ██║   ██║   ██║██║     ██║   ██║    ╚████╔╝ 
-██║   ██║   ██║   ██║██║     ██║   ██║     ╚██╔╝  
-╚██████╔╝   ██║   ██║███████╗██║   ██║      ██║   
- ╚═════╝    ╚═╝   ╚═╝╚══════╝╚═╝   ╚═╝      ╚═╝   
-                                                  
+███████╗███████╗████████╗██╗   ██╗██████╗ 
+██╔════╝██╔════╝╚══██╔══╝██║   ██║██╔══██╗
+███████╗█████╗     ██║   ██║   ██║██████╔╝
+╚════██║██╔══╝     ██║   ██║   ██║██╔═══╝ 
+███████║███████╗   ██║   ╚██████╔╝██║     
+╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝     
 """
 
-def process_image():
-    pass
-    
+""" ==============================
+            GPIO SETUP
+    ============================== """
+GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
+
+""" ==============================
+            TT MOTOR
+    ============================== """
+
+PWMA = 32
+AIN1 = 31
+AIN2 = 33
+BIN1 = 35
+BIN2 = 37
+PWMB = 38
+motor_pins = [PWMA, AIN1, AIN2, BIN1, BIN2, PWMB]
+for pin in motor_pins:
+    GPIO.setup(pin, GPIO.OUT)
+pwm_A = GPIO.PWM(PWMA, 1000)
+pwm_B = GPIO.PWM(PWMB, 1000)
+pwm_A.start(0)
+pwm_B.start(0)
+
+""" ==============================
+            LED
+    ============================== """
+LED_COUNT = 11
+LED_PIN = 18
+LED_BRIGHTNESS = 10
+LED_FREQ_HZ = 800000
+LED_DMA = 10
+LED_INVERT = False
+LED_CHANNEL = 0
+strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+strip.begin()
+
+for i in range(strip.numPixels()-1):
+    strip.setPixelColor(i, Color(255, 0, 0))
+strip.show()
+time.sleep(0.25)
+for i in range(strip.numPixels()-1):
+    strip.setPixelColor(i, Color(0, 255, 0))
+strip.show()
+time.sleep(0.25)
+for i in range(strip.numPixels()-1):
+    strip.setPixelColor(i, Color(0, 0, 255))
+strip.show()
+time.sleep(0.25)
+idx = strip.numPixels() - 1
+strip.setPixelColor(idx, Color(255, 0, 0))
+strip.show()
+
+""" ==============================
+            SERVO MOTOR
+    ============================== """
+SERVOPIN = 11
+GPIO.setup(SERVOPIN, GPIO.OUT)
+
+""" ==============================
+            MOTOR CONTROL
+    ============================== """
+# from motor_control import control
+r = 0
+
+"""
+██╗    ██╗██╗  ██╗██╗██╗     ███████╗
+██║    ██║██║  ██║██║██║     ██╔════╝
+██║ █╗ ██║███████║██║██║     █████╗  
+██║███╗██║██╔══██║██║██║     ██╔══╝  
+╚███╔███╔╝██║  ██║██║███████╗███████╗
+ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝╚══════╝╚══════╝
+"""
+
+# prev_pos:       tuple(int, int)
+# cur_pos:        tuple(int, int)
+# prev_rgb:       tuple(int, int, int)
+# cur_rgb:        tuple(int, int, int)
+# has_cockroach:  bool
+
+rgb = [(0, 0, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255), ]
 def call_rpi():
-    pass
+    global cur_pos, prev_rgb, has_hit
+    global rgb
+    global pwm_A, pwm_B
+    global strip, prev_rgb, cur_rgb, has_hit
 
-
-def handle_image_sent():
-    process_image()
-    call_rpi()
+    for i in range(5):
+        cur_pos = [4-i, 4-i]
+        prev_rgb = rgb[i]
+        cur_rgb = rgb[i+1]
+        has_hit = cur_pos[0] ** 2 + cur_pos[1] ** 2 <= r
+        # motor_control()
+        motor_tt(0, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
+        set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
+        time.sleep(2)
+        if has_hit:
+            motor_servo(SERVOPIN)
+            set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
+            break
 
 """
 ███████╗██╗      █████╗ ███████╗██╗  ██╗
@@ -92,33 +187,6 @@ def receive_image():
     except Exception as e:
         logger.error(f"Error processing image: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
-"""
-# Endpoint to list all captured images
-@app.route('/api/images', methods=['GET'])
-def list_images():
-    try:
-        images = [f for f in os.listdir(IMAGES_DIR) if f.endswith('.jpg')]
-        images.sort(reverse=True)  # Show newest first
-        
-        return jsonify({
-            "count": len(images),
-            "images": images
-        })
-    
-    except Exception as e:
-        logger.error(f"Error listing images: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
-# Endpoint to retrieve a specific image
-@app.route('/api/images/<filename>', methods=['GET'])
-def get_image(filename):
-    try:
-        return send_from_directory(IMAGES_DIR, filename)
-    except Exception as e:
-        logger.error(f"Error retrieving image {filename}: {str(e)}")
-        return jsonify({"error": str(e)}), 404
-"""
 
 if __name__ == '__main__':
     # For development only - use a production WSGI server in production
