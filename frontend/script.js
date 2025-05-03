@@ -1,3 +1,53 @@
+// Same brown filter and ellipse detection logic
+function brownFilter(canvasId) {
+    const img = cv.imread(canvasId);  // get OpenCV Mat from canvas
+    const hsv = new cv.Mat();
+    cv.cvtColor(img, hsv, cv.COLOR_RGB2HSV);
+  
+    const lowerBrown = new cv.Mat(hsv.rows, hsv.cols, hsv.type(), [5, 0, 0, 0]);
+    const upperBrown = new cv.Mat(hsv.rows, hsv.cols, hsv.type(), [70, 255, 60, 255]);
+  
+    const mask = new cv.Mat();
+    cv.inRange(hsv, lowerBrown, upperBrown, mask);
+  
+    // Clean up
+    img.delete();
+    hsv.delete();
+    lowerBrown.delete();
+    upperBrown.delete();
+  
+    return mask;
+  }
+  
+  function findEllipse(img) {
+    const brownMask = brownFilter(img);
+    const blurred = brownMask.gaussianBlur(new cv.Size(5, 5), 0);
+    const edges = blurred.canny(50, 150);
+  
+    const contours = edges.findContours(cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+    let largestEllipse = null;
+    let maxArea = 0;
+  
+    for (let contour of contours) {
+      if (contour.numPoints >= 5) {
+        const ellipse = contour.fitEllipse();
+        const area = Math.PI * (ellipse.axes.width / 2) * (ellipse.axes.height / 2);
+        if (area > maxArea) {
+          maxArea = area;
+          largestEllipse = ellipse;
+        }
+      }
+    }
+  
+    // if (largestEllipse) {
+      // img.drawEllipse(largestEllipse, new cv.Vec(0, 255, 0), 2, cv.LINE_8);
+    // }
+  
+    // return img;
+    console.log(largestEllipse);
+    return largestEllipse;
+  }
+
 // Config Variables
 const intervalSeconds = 1; // seconds
 
@@ -55,6 +105,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function captureImage() {
         // Draw current video frame to canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        let ellipse = findEllipse(canvas);
+        if (ellipse) {
+            // Draw ellipse on canvas
+            context.beginPath();
+            context.ellipse(ellipse.center.x, ellipse.center.y, ellipse.axes.width / 2, ellipse.axes.height / 2, 0, 0, 2 * Math.PI);
+            context.strokeStyle = 'red';
+            context.lineWidth = 2;
+            context.stroke();
+        }
         
         // Convert canvas to image data URL
         const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
