@@ -149,10 +149,15 @@ if __name__ == "__main__":
             logger.error(f"Error: {str(e)}")
         set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
         # time.sleep(0.1)
-        if has_hit:
-            motor_servo(SERVOPIN)
-            set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
-            # run_rpi = False
+        # if has_hit:
+        #     motor_servo(SERVOPIN)
+        #     set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
+        #     run_rpi = False
+        #     clear_strip(strip)
+        #     time.sleep(0.5)
+        #     pwm_A.stop()
+        #     pwm_B.stop()
+        #     GPIO.cleanup()
         
         # Update prev
         prev_rgb = cur_rgb
