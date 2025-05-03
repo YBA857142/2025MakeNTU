@@ -117,6 +117,7 @@ if __name__ == "__main__":
     cur_pos = (-1, -1)
     prev_pos = (-1, -1)
     has_cockroach = False
+    prev_has_cockroach = False
     prev_rgb = (0, 0, 0)
     cur_rgb = (0, 0, 0)
     has_hit = False
@@ -197,6 +198,7 @@ if __name__ == "__main__":
         global cur_pos
         global cur_rgb
         global has_cockroach
+        global prev_has_cockroach
         global run_rpi
 
         try:
@@ -212,7 +214,9 @@ if __name__ == "__main__":
             # Get data for call_rpi()
             raw_pos = data.get("position")
             raw_rgb = data.get("color")
-            has_cockroach = (True and has_cockroach) if data.get("has_cockroach") else False
+            new_has_cockroach = True if data.get("has_cockroach") else False
+            prev_has_cockroach = True if data.get("has_cockroach") else False
+            has_cockroach = new_has_cockroach and has_cockroach
             try:
                 cur_pos = (raw_pos[0], raw_pos[1])
             except:
