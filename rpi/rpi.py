@@ -19,7 +19,7 @@ GPIO.setwarnings(False)
 ''' ==============================
             TT MOTOR
     ============================== '''
-from motor_tt import motor_tt
+# from motor_tt import motor_tt
 PWMA = 32
 AIN1 = 31
 AIN2 = 33
@@ -75,8 +75,9 @@ GPIO.setup(SERVOPIN, GPIO.OUT)
 ''' ==============================
             MOTOR CONTROL
     ============================== '''
-# from motor_control import control
-r = 0
+r = 3
+prev_predict = 0
+predict = 0
 
 '''
 ██╗    ██╗██╗  ██╗██╗██╗     ███████╗
@@ -93,17 +94,12 @@ r = 0
 # cur_rgb:        tuple(int, int, int)
 # has_cockroach:  bool
 
-# while 1:
-rgb = [(0, 0, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255), ]
-for i in range(5):
-    cur_pos = [4-i, 4-i]
-    prev_rgb = rgb[i]
-    cur_rgb = rgb[i+1]
+while 1:
+    prev_predict = predict
     has_hit = cur_pos[0] ** 2 + cur_pos[1] ** 2 <= r
-    # motor_control()
-    motor_tt(0, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
+    predict = motor_control(prev_pos, cur_pos, has_cockroach, prev_predict, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
     set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
-    time.sleep(2)
+    time.sleep(0.1)
     if has_hit:
         motor_servo(SERVOPIN)
         set_strip_color(strip, prev_rgb, cur_rgb, has_hit)

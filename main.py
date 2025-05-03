@@ -9,6 +9,8 @@ from rpi.motor_tt import motor_tt
 from rpi.led import set_strip_color, clear_strip
 from rpi_ws281x import PixelStrip, Color
 from rpi.motor_servo import motor_servo
+from rpi.motor_control import motor_control
+
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -91,8 +93,9 @@ GPIO.setup(SERVOPIN, GPIO.OUT)
 """ ==============================
             MOTOR CONTROL
     ============================== """
-# from motor_control import control
-r = 0
+r = 3
+prev_predict = 0
+predict = 0
 
 """
 ██╗    ██╗██╗  ██╗██╗██╗     ███████╗
@@ -109,26 +112,33 @@ r = 0
 # cur_rgb:        tuple(int, int, int)
 # has_cockroach:  bool
 
-rgb = [(0, 0, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255), ]
-def call_rpi():
-    global cur_pos, prev_rgb, has_hit
-    global rgb
-    global pwm_A, pwm_B
-    global strip, prev_rgb, cur_rgb, has_hit
+run_rpi = True
 
-    for i in range(5):
-        cur_pos = [4-i, 4-i]
-        prev_rgb = rgb[i]
-        cur_rgb = rgb[i+1]
-        has_hit = cur_pos[0] ** 2 + cur_pos[1] ** 2 <= r
-        # motor_control()
-        motor_tt(0, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
+cur_pos = (-1, -1)
+prev_pos = (-1, -1)
+has_cockroach = False
+prev_rgb = (0, 0, 0)
+cur_rgb = (0, 0, 0)
+has_hit = False
+
+def call_rpi():
+    global prev_predict, predict
+    global cur_pos, prev_pos, has_cockroach
+    global pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2
+    global prev_rgb, cur_rgb, has_hit
+    global strip
+    global SERVOPIN
+    global run_rpi
+
+    prev_predict = predict
+    has_hit = cur_pos[0] ** 2 + cur_pos[1] ** 2 <= r
+    predict = motor_control(prev_pos, cur_pos, has_cockroach, prev_predict, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
+    set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
+    time.sleep(0.1)
+    if has_hit:
+        motor_servo(SERVOPIN)
         set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
-        time.sleep(2)
-        if has_hit:
-            motor_servo(SERVOPIN)
-            set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
-            break
+        run_rpi = False
 
 """
 ███████╗██╗      █████╗ ███████╗██╗  ██╗
