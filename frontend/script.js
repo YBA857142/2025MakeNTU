@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let prevY = [];
     async function collectPositions(position, color, hasCockroach) {
         if (!hasCockroach) {
-            await sendPositionToServer(position, color, hasCockroach);
+            sendPositionToServer(position, color, hasCockroach);
             return;
         }
         prevX.push(position[0]);
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             prevX = [...prevXUnsorted];
             prevX.shift();
             prevY.shift();
-            await sendPositionToServer([xMedian, yMedian], color, hasCockroach)
+            sendPositionToServer([xMedian, yMedian], color, hasCockroach)
         }
     }
     
