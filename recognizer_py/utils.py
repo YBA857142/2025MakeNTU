@@ -2,11 +2,6 @@ import os
 import sys
 import cv2
 import numpy as np
-from PIL import Image
-from skimage.feature import hog
-from skimage import exposure
-from sklearn.svm import LinearSVC
-import joblib
 import matplotlib.pyplot as plt
 
 
@@ -28,6 +23,7 @@ def brown_filter(img_path, resize_to):
 
     # save img
     cv2.imwrite('brown_filter_result.png', mask)
+    return mask
 
 
 if __name__ == "__main__":
