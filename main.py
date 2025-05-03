@@ -38,13 +38,10 @@ def receive_image():
         
         # Get image data and timestamp
         image_data = data.get('imageData')
-        timestamp = data.get('timestamp', datetime.now().isoformat())
-        
-        # Format timestamp for filename (remove special characters)
-        formatted_timestamp = timestamp.replace(':', '-').replace('.', '-')
+        timestamp = int(round(datetime.now().timestamp() * 1000))
         
         # Save the image to disk
-        filename = f"image_{formatted_timestamp}.jpg"
+        filename = f"image_{timestamp}.jpg"
         file_path = os.path.join(IMAGES_DIR, filename)
         
         # Decode base64 and save to file
@@ -64,6 +61,7 @@ def receive_image():
         logger.error(f"Error processing image: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+"""
 # Endpoint to list all captured images
 @app.route('/api/images', methods=['GET'])
 def list_images():
@@ -88,6 +86,7 @@ def get_image(filename):
     except Exception as e:
         logger.error(f"Error retrieving image {filename}: {str(e)}")
         return jsonify({"error": str(e)}), 404
+"""
 
 if __name__ == '__main__':
     # For development only - use a production WSGI server in production

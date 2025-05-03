@@ -6,8 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const intervalInput = document.getElementById('interval');
-    const startBtn = document.getElementById('startBtn');
-    const stopBtn = document.getElementById('stopBtn');
+    const toggleBtn = document.getElementById('toggleBtn');
     const statusDiv = document.getElementById('status');
     
     let captureInterval;
@@ -15,6 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Setup canvas context
     const context = canvas.getContext('2d');
+    
+    toggleBtn.isOn = false;
+    function toggleButtonText(){
+        toggleBtn.isOn = !toggleBtn.isOn;
+        toggleBtn.innerHTML = toggleBtn.isOn ? "Stop Capture" : "Start Capture";
+        return toggleBtn.isOn;
+    }
     
     // Start the camera
     async function startCamera() {
@@ -112,9 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Schedule periodic captures
         captureInterval = setInterval(captureImage, intervalSeconds * 1000);
         
-        // Update UI
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
         intervalInput.disabled = true;
         
         showStatus(`Capture started with ${intervalSeconds} second interval`, 'success');
@@ -123,26 +126,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Stop periodic capture
     function stopCapture() {
         clearInterval(captureInterval);
-        
-        // Update UI
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
+
         intervalInput.disabled = false;
         
         showStatus('Capture stopped', 'success');
     }
     
     // Event listeners
-    startBtn.addEventListener('click', () => {
-        startCamera().then(() => {
-            // Wait a bit for camera to initialize before starting capture
-            setTimeout(startCapture, 1000);
-        });
-    });
-    
-    stopBtn.addEventListener('click', () => {
-        stopCapture();
-        stopCamera();
+    toggleBtn.addEventListener('click', () => {
+        toggleButtonText();
+        if (toggleBtn.isOn){
+            startCamera().then(() => {
+                // Wait a bit for camera to initialize before starting capture
+                setTimeout(startCapture, 1000);
+            });
+        } else {
+            stopCapture();
+            stopCamera();
+        }
     });
     
     // Clean up resources when page is closed
