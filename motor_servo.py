@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 def motor_servo(GPIO_PIN):
-    angle_down = 90
+    angle_down = 60
     angle_up = 0
     pwm = GPIO.PWM(GPIO_PIN, 50)
     pwm.start(0)

@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
     
-    // Send image to server
+    // Send position to server
     async function sendPostionToServer(position, color, hasCockroach) {
         try {
             // Remove the data:image/jpeg;base64, prefix to get just the base64 data
