@@ -37,8 +37,8 @@ if __name__ == "__main__":
         pwm_A.start(0)
         pwm_B.start(0)
 
-        for i in range(40):
-            motor_tt(0, 0.1)
+        motor_tt(0, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
+        time.sleep(1)
     finally:
         pwm_A.stop()
         pwm_B.stop()
