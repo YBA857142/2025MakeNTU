@@ -264,6 +264,33 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Error sending data:', err);
         }
     }
+
+    async function sendMovementToPC(compassData, motionData) {
+        try {
+            // Remove the data:image/jpeg;base64, prefix to get just the base64 data
+                        
+            const response = await fetch('http://10.10.32.36/api/movement', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    compassData: compassData,
+                    motionData: motionData
+                })
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                showStatus(hasCockroach ? `Cockroach Position (${position[0]}, ${position[1]}) Sent!` : `No Cockroach!`, 'success');
+            } else {
+                showStatus(`Error sending data: ${response.statusText}`, 'error');
+            }
+        } catch (err) {
+            showStatus(`Error sending data: ${err.message}`, 'error');
+            console.error('Error sending data:', err);
+        }
+    }
     
     // Display status message
     function showStatus(message, type) {
@@ -317,18 +344,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         stopCamera();
     });
 
-    let currentHeading = 0;  // Compass heading
+    let compassData = 0;  // Compass heading
     let motionData = { x: 0, y: 0, z: 0 };  // Accelerometer data
 
     // 1) Device orientation for compass heading
     if (window.DeviceOrientationEvent) {
     window.addEventListener('deviceorientation', event => {
         if (typeof event.webkitCompassHeading === 'number') {
-        currentHeading = event.webkitCompassHeading;
+        compassData = event.webkitCompassHeading;
         } else if (event.absolute === true && event.alpha !== null) {
-        currentHeading = event.alpha;
+        compassData = event.alpha;
         } else if (event.alpha !== null) {
-        currentHeading = event.alpha;
+        compassData = event.alpha;
         }
     }, true);
     } else {
@@ -347,66 +374,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
     console.warn('DeviceMotionEvent is not supported');
     }
-
-    // 3) Your existing captureImage() with additions
-    function captureImage() {
-    // Draw video and ellipse
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const ellipse = findEllipse(canvas);
-    if (ellipse) {
-        context.beginPath();
-        context.ellipse(
-        ellipse.center.x, ellipse.center.y,
-        ellipse.axes.width / 2, ellipse.axes.height / 2,
-        0, 0, 2 * Math.PI
-        );
-        context.strokeStyle = 'red';
-        context.lineWidth = 2;
-        context.stroke();
-    }
-
-    // Draw compass
-    const cx = canvas.width - 60;
-    const cy = 60;
-    const radius = 50;
-
-    context.save();
-    context.beginPath();
-    context.arc(cx, cy, radius, 0, 2 * Math.PI);
-    context.strokeStyle = '#0099ff';
-    context.lineWidth = 3;
-    context.stroke();
-
-    context.fillStyle = '#0099ff';
-    context.font = '16px sans-serif';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.fillText('N', cx, cy - radius + 16);
-
-    context.translate(cx, cy);
-    context.rotate(-currentHeading * Math.PI / 180);
-    context.beginPath();
-    context.moveTo(0, 10);
-    context.lineTo(0, -radius + 10);
-    context.strokeStyle = 'crimson';
-    context.lineWidth = 4;
-    context.stroke();
-    context.restore();
-
-    // 4) Draw motion data in top-left corner
-    context.fillStyle = '#00cc66';
-    context.font = '14px monospace';
-    context.textAlign = 'left';
-    context.textBaseline = 'top';
-    context.fillText(`Accel X: ${motionData.x.toFixed(2)}`, 10, 10);
-    context.fillText(`Accel Y: ${motionData.y.toFixed(2)}`, 10, 30);
-    context.fillText(`Accel Z: ${motionData.z.toFixed(2)}`, 10, 50);
-
-    // Send to server
-    const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-    return imageDataUrl;
-    }
-
 });
 
 // async function displayCameras() {
