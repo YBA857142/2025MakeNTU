@@ -60,7 +60,7 @@ function findEllipse(canvasId) {
             angle: rotatedRect.angle
             };
             const area = Math.PI * (ellipse.axes.width / 2) * (ellipse.axes.height / 2);
-            if (area > 50 && area < 1500) {
+            if (area > 300 && area < 1500) {
                 if (ellipse.axes.width > 30 || ellipse.axes.height > 30) {
                     continue
                 }
@@ -231,13 +231,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Send the image to the server
         
         color = findColor(canvas, context);
-        await sendPostionToServer(position, color, hasCockroach);
+        await collectPositions(position, color, hasCockroach);
         
         return;
     }
+
+    let prevX = [];
+    let prevY = [];
+    async function collectPositions(position, color, hasCockroach) {
+        prevX.push(position[0]);
+        prevY.push(postion[1]);
+        if (prevX.length >= 5) {
+            let prevXUnsorted = [...prevX];
+            prevX.sort();
+            let xMedian = prevX[2];
+            let xIndex = prevXUnsorted.indexOf(prevX[2]);
+            let yMedian = prevY[xIndex];
+            prevX = [];
+            prevY = [];
+            sendPositionToServer([xMedian, yMedian], color, hasCockroach)
+        }
+    }
     
     // Send position to server
-    async function sendPostionToServer(position, color, hasCockroach) {
+    async function sendPositionToServer(position, color, hasCockroach) {
         try {
             // Remove the data:image/jpeg;base64, prefix to get just the base64 data
                         
