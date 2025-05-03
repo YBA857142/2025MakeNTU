@@ -322,9 +322,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     function stopCapture() {
         clearInterval(captureInterval);
 
-        fetch('/api/stop', {
-            method: "POST"
-        });
+        // fetch('/api/stop', {
+        //     method: "POST"
+        // });
         
         showStatus('Capture stopped', 'success');
     }
