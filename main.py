@@ -193,6 +193,7 @@ if __name__ == "__main__":
         global cur_pos
         global cur_rgb
         global has_cockroach
+        global run_rpi
 
         try:
             data = request.json
@@ -207,7 +208,7 @@ if __name__ == "__main__":
             # Get data for call_rpi()
             raw_pos = data.get("position")
             raw_rgb = data.get("color")
-            has_cockroach = True if data.get("has_cockroach") else False
+            has_cockroach = (True and has_cockroach) if data.get("has_cockroach") else False
             try:
                 cur_pos = (raw_pos[0], raw_pos[1])
             except:
@@ -219,12 +220,29 @@ if __name__ == "__main__":
             
             print(raw_pos, raw_rgb, has_cockroach)
             call_rpi()
+
+            run_rpi = True
             
-            return jsonify({"status": "success"})
+            return jsonify({"status": "success", "is_running": run_rpi})
         
         except Exception as e:
+            run_rpi = False
             logger.error(f"Error: {str(e)}")
             return jsonify({"error": str(e)}), 500
+
+    @app.route('/api/stop', methods=['POST'])
+    def stop_program():
+        global run_rpi
+        run_rpi = False
+        print("STOPPED PROGRAM VIA API CALL")
+        return jsonify({"success": True})
+    
+    @app.route('/api/run', methods=['POST'])
+    def stop_program():
+        global run_rpi
+        run_rpi = True
+        print("STARTED PROGRAM VIA API CALL")
+        return jsonify({"success": True})
 
     # For development only - use a production WSGI server in production
     app.run(host='0.0.0.0', port=80, debug=False)

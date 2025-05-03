@@ -255,6 +255,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             if (response.ok) {
                 const result = await response.json();
+                if (!result.is_running){
+                    if (toggleBtn.isOn){
+                        toggleButtonText();
+                    }
+                }
                 showStatus(hasCockroach ? `Cockroach Position (${position[0]}, ${position[1]}) Sent!` : `No Cockroach!`, 'success');
             } else {
                 showStatus(`Error sending data: ${response.statusText}`, 'error');
@@ -282,6 +287,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Initial capture
         captureImage();
+
+        fetch('/api/run', {
+            method: "POST"
+        });
         
         // Schedule periodic captures
         captureInterval = setInterval(captureImage, intervalSeconds * 1000);
@@ -292,6 +301,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Stop periodic capture
     function stopCapture() {
         clearInterval(captureInterval);
+
+        fetch('/api/stop', {
+            method: "POST"
+        });
         
         showStatus('Capture stopped', 'success');
     }
