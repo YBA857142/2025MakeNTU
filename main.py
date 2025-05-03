@@ -130,6 +130,7 @@ if __name__ == "__main__":
         pwm_B.stop()
         GPIO.cleanup()
 
+    counter = 0
     def call_rpi():
         global prev_predict, predict
         global cur_pos, prev_pos, has_cockroach
@@ -138,6 +139,7 @@ if __name__ == "__main__":
         global strip
         global SERVOPIN
         global run_rpi
+        global counter
 
         # If cockroach is hit, return
         if not run_rpi:
@@ -158,15 +160,18 @@ if __name__ == "__main__":
             logger.error(f"Error: {str(e)}")
         set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
         # time.sleep(0.1)
-        if has_hit:
+        if has_hit and counter > 100:
             motor_servo(SERVOPIN)
             set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
             run_rpi = False
             stop_rpi()
+            
         
         # Update prev
         prev_rgb = cur_rgb
         prev_pos = cur_pos
+
+        counter = counter + 1
 
     """
     ███████╗██╗      █████╗ ███████╗██╗  ██╗
