@@ -140,19 +140,22 @@ if __name__ == "__main__":
             prev_rgb = cur_rgb
             return
         
-        prev_predict = predict
-        has_hit = cur_pos[0] ** 2 + cur_pos[1] ** 2 <= r
-        predict = motor_control(prev_pos, cur_pos, has_cockroach, prev_predict, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
-        set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
-        # time.sleep(0.1)
-        if has_hit:
-            motor_servo(SERVOPIN)
+        try:
+            prev_predict = predict
+            has_hit = cur_pos[0] ** 2 + cur_pos[1] ** 2 <= r
+            predict = motor_control(prev_pos, cur_pos, has_cockroach, prev_predict, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
             set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
-            run_rpi = False
-        
-        # Update prev
-        prev_rgb = cur_rgb
-        prev_pos = cur_pos
+            # time.sleep(0.1)
+            if has_hit:
+                motor_servo(SERVOPIN)
+                set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
+                run_rpi = False
+            
+            # Update prev
+            prev_rgb = cur_rgb
+            prev_pos = cur_pos
+        except Exception as e:
+            logger.error(f"Error: {str(e)}")
 
     """
     ███████╗██╗      █████╗ ███████╗██╗  ██╗
