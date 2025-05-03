@@ -3,10 +3,11 @@ import time
 
 def motor_tt(scale, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2):
     scale0 = 3
+    speed = 50
     speed_A = scale0 + scale
     speed_B = scale0 - scale
-    pwm_A.ChangeDutyCycle(100 * speed_A / max(speed_B, speed_A))
-    pwm_B.ChangeDutyCycle(100 * speed_B / max(speed_B, speed_A))
+    pwm_A.ChangeDutyCycle(speed * speed_A / max(speed_B, speed_A))
+    pwm_B.ChangeDutyCycle(speed * speed_B / max(speed_B, speed_A))
     GPIO.output(AIN1, GPIO.HIGH)
     GPIO.output(AIN2, GPIO.LOW)
     GPIO.output(BIN1, GPIO.HIGH)
