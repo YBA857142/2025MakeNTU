@@ -3,7 +3,7 @@ const intervalSeconds = 0.2; // seconds
 
 // Modify the startCamera function like this:
 async function startCamera() {
-    const targetCameraLabel = 'camera2 2, facing back'; // Replace with the exact label of the camera you want
+    const targetCameraLabel = 'camera2 0, facing back'; // Replace with the exact label of the camera you want
 
     try {
         const devices = await navigator.mediaDevices.enumerateDevices();
@@ -38,7 +38,7 @@ async function startCamera() {
         showStatus('Camera started successfully', 'success');
     } catch (err) {
         showStatus(`Error accessing camera: ${err.message}`, 'error');
-        console.error('Error accessing camera:', err);
+        alert('Error accessing camera:', err);
     }
 }
 
@@ -177,10 +177,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
     
             if (!selectedDeviceId && videoDevices.length > 0) {
-                console.warn(`Camera with label "${targetCameraLabel}" not found. Using the first available camera.`);
+                alert(`Camera with label "${targetCameraLabel}" not found. Using the first available camera.`);
                 selectedDeviceId = videoDevices[0].deviceId;
             } else if (!selectedDeviceId) {
-                throw new Error('No video input devices found.');
+                alert('No video input devices found.');
             }
     
             stream = await navigator.mediaDevices.getUserMedia({
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             showStatus('Camera started successfully', 'success');
         } catch (err) {
             showStatus(`Error accessing camera: ${err.message}`, 'error');
-            console.error('Error accessing camera:', err);
+            alert('Error accessing camera:', err);
         }
     }
     
