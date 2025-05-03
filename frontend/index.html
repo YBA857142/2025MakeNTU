@@ -3,11 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
     <title>COCKROACH!!!</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <script src="script.js">
-    </script>
+    <div class="container">
+        <h1>COCKROACH!!!</h1>
+        
+        <div class="controls">
+            <label for="interval">Capture interval (seconds):</label>
+            <input type="number" id="interval" min="1" value="5">
+            
+            <button id="startBtn">Start Capture</button>
+            <button id="stopBtn" disabled>Stop Capture</button>
+        </div>
+        
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+        
+        <h3>Latest Captured Image:</h3>
+        <img id="capturedImage" src="/api/placeholder/320/240" alt="Captured image will appear here">
+        
+        <div id="status"></div>
+    </div>
+    
+    <script src="app.js"></script>
 </body>
 </html>

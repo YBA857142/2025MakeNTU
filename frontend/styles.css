@@ -1,0 +1,56 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#video {
+    width: 100%;
+    max-width: 640px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+#canvas {
+    display: none;
+}
+
+#capturedImage {
+    width: 100%;
+    max-width: 320px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.controls {
+    width: 100%;
+    max-width: 640px;
+    margin-bottom: 20px;
+}
+
+.controls label {
+    margin-right: 10px;
+}
+
+#status {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.success {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.error {
+    background-color: #f2dede;
+    color: #a94442;
+}
