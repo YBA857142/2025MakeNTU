@@ -8,7 +8,6 @@ git pull
 
 # Python
 echo "Installing Required Files..."
-sudo python3 -m pip install -r requirements.txt
 
 # Run
 echo "RUN!"
