@@ -11,13 +11,12 @@ from rpi_ws281x import PixelStrip, Color
 from motor_servo import motor_servo
 from motor_control import motor_control
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+app = Flask(__name__, static_folder='frontend', static_url_path='')
+
 if __name__ == "__main__":
-
-    # Set up logging
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__name__)
-
-    app = Flask(__name__, static_folder='frontend', static_url_path='')
 
     # Create directory to store captured images
     IMAGES_DIR = 'images_working'
@@ -50,7 +49,6 @@ if __name__ == "__main__":
     PWMB = 38
     motor_pins = [PWMA, AIN1, AIN2, BIN1, BIN2, PWMB]
     for pin in motor_pins:
-        print(pin)
         GPIO.setup(pin, GPIO.OUT)
     pwm_A = GPIO.PWM(PWMA, 1000)
     pwm_B = GPIO.PWM(PWMB, 1000)
@@ -220,4 +218,4 @@ if __name__ == "__main__":
             return jsonify({"error": str(e)}), 500
 
     # For development only - use a production WSGI server in production
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=False)
