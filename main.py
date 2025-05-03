@@ -186,37 +186,37 @@ if __name__ == "__main__":
         global cur_rgb
         global has_cockroach
 
-        try:
-            data = request.json
-            
-            if (not data 
-                or 'position' not in data
-                or 'color' not in data
-                or 'has_cockroach' not in data
-            ):
-                return jsonify({"error": "No position data received"}), 400
-            
-            # Get data for call_rpi()
-            raw_pos = data.get("position")
-            raw_rgb = data.get("color")
-            has_cockroach = True if data.get("has_cockroach") else False
-            try:
-                cur_pos = (raw_pos[0], raw_pos[1])
-            except:
-                return jsonify({"error": "Wrong position format"}), 400
-            try:
-                cur_rgb = (raw_rgb[0], raw_rgb[1], raw_rgb[2])
-            except:
-                return jsonify({"error": "Wrong color format"})
-            
-            print(raw_pos, raw_rgb, has_cockroach)
-            call_rpi()
-            
-            return jsonify({"status": "success"})
+    # try:
+        data = request.json
         
-        except Exception as e:
-            logger.error(f"Error processing image: {str(e)}")
-            return jsonify({"error": str(e)}), 500
+        if (not data 
+            or 'position' not in data
+            or 'color' not in data
+            or 'has_cockroach' not in data
+        ):
+            return jsonify({"error": "No position data received"}), 400
+        
+        # Get data for call_rpi()
+        raw_pos = data.get("position")
+        raw_rgb = data.get("color")
+        has_cockroach = True if data.get("has_cockroach") else False
+        try:
+            cur_pos = (raw_pos[0], raw_pos[1])
+        except:
+            return jsonify({"error": "Wrong position format"}), 400
+        try:
+            cur_rgb = (raw_rgb[0], raw_rgb[1], raw_rgb[2])
+        except:
+            return jsonify({"error": "Wrong color format"})
+        
+        print(raw_pos, raw_rgb, has_cockroach)
+        call_rpi()
+        
+        return jsonify({"status": "success"})
+    
+    # except Exception as e:
+        logger.error(f"Error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
     # For development only - use a production WSGI server in production
     app.run(host='0.0.0.0', port=80, debug=False)
