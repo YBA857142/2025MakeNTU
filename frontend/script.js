@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let prevY = [];
     async function collectPositions(position, color, hasCockroach) {
         prevX.push(position[0]);
-        prevY.push(postion[1]);
+        prevY.push(position[1]);
         if (prevX.length >= 5) {
             let prevXUnsorted = [...prevX];
             prevX.sort();
