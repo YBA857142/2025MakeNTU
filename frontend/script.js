@@ -64,6 +64,9 @@ function findEllipse(canvasId) {
                 if (ellipse.axes.width > 30 || ellipse.axes.height > 30) {
                     continue
                 }
+                if (y < Math.floor(canvas.height / 10)) {
+                    continue;
+                }
                 if (area > maxArea) {
                     maxArea = area;
                     largestEllipse = ellipse;
@@ -90,7 +93,7 @@ function wait50Milliseconds() {
 }
 
 function coordinateConversion(x, y, maxX, maxY) {
-    return [x, Math.max(maxY - y, 0)];
+    return [Math.floor(x - maxX / 2), Math.max(maxY - y, 0)];
 }
 
 function findColor(canvas, context) {
