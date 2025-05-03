@@ -238,7 +238,7 @@ if __name__ == "__main__":
         return jsonify({"success": True})
     
     @app.route('/api/run', methods=['POST'])
-    def stop_program():
+    def run_program():
         global run_rpi
         run_rpi = True
         print("STARTED PROGRAM VIA API CALL")
