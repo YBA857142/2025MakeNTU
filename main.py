@@ -49,6 +49,7 @@ BIN2 = 37
 PWMB = 38
 motor_pins = [PWMA, AIN1, AIN2, BIN1, BIN2, PWMB]
 for pin in motor_pins:
+    print(pin)
     GPIO.setup(pin, GPIO.OUT)
 pwm_A = GPIO.PWM(PWMA, 1000)
 pwm_B = GPIO.PWM(PWMB, 1000)
