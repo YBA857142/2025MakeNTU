@@ -42,7 +42,7 @@ def motor_servo(GPIO_PIN):
 
 if __name__ == "__main__":
     GPIO.setmode(GPIO.BOARD)
-    GPIO_PIN = 15
+    GPIO_PIN = 12
     GPIO.setup(GPIO_PIN, GPIO.OUT)
     motor_servo(GPIO_PIN=GPIO_PIN)
     GPIO.cleanup()
