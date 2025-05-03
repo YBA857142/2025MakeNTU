@@ -51,5 +51,9 @@ if __name__ == "__main__":
     TT
     """
     motor_tt(1, PWMA, PWMB, AIN1, AIN2, BIN1, BIN2)
-
+    time.sleep(0.5)
+    GPIO.output(AIN1, GPIO.LOW)
+    GPIO.output(AIN2, GPIO.LOW)
+    GPIO.output(BIN1, GPIO.LOW)
+    GPIO.output(BIN2, GPIO.LOW)
     GPIO.cleanup()
