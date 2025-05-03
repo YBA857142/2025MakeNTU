@@ -14,6 +14,36 @@ app = Flask(__name__, static_folder='frontend', static_url_path='')
 IMAGES_DIR = 'images_working'
 os.makedirs(IMAGES_DIR, exist_ok=True)
 
+"""
+██╗   ██╗████████╗██╗██╗     ██╗████████╗██╗   ██╗
+██║   ██║╚══██╔══╝██║██║     ██║╚══██╔══╝╚██╗ ██╔╝
+██║   ██║   ██║   ██║██║     ██║   ██║    ╚████╔╝ 
+██║   ██║   ██║   ██║██║     ██║   ██║     ╚██╔╝  
+╚██████╔╝   ██║   ██║███████╗██║   ██║      ██║   
+ ╚═════╝    ╚═╝   ╚═╝╚══════╝╚═╝   ╚═╝      ╚═╝   
+                                                  
+"""
+
+def process_image():
+    pass
+    
+def call_rpi():
+    pass
+
+
+def handle_image_sent():
+    process_image()
+    call_rpi()
+
+"""
+███████╗██╗      █████╗ ███████╗██╗  ██╗
+██╔════╝██║     ██╔══██╗██╔════╝██║ ██╔╝
+█████╗  ██║     ███████║███████╗█████╔╝ 
+██╔══╝  ██║     ██╔══██║╚════██║██╔═██╗ 
+██║     ███████╗██║  ██║███████║██║  ██╗
+╚═╝     ╚══════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝                                 
+"""
+
 # Serve static files (HTML, CSS, JS) from /frontend
 @app.route('/')
 def index():
@@ -49,6 +79,8 @@ def receive_image():
             f.write(base64.b64decode(image_data))
         
         logger.info(f"Image saved: {filename}")
+
+        # Process Image and Call RPI
         
         return jsonify({
             "status": "success",
