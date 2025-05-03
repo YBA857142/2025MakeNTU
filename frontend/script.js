@@ -96,7 +96,7 @@ function wait50Milliseconds() {
 }
 
 function coordinateConversion(x, y, maxX, maxY) {
-    return [Math.floor(x - maxX / 2), Math.max(maxY - y, 0)];
+    return [Math.floor(x - maxX / 2), Math.max(maxY - y + 150, 0)];
 }
 
 function findColor(canvas, context) {
