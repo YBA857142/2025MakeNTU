@@ -121,6 +121,14 @@ if __name__ == "__main__":
     cur_rgb = (0, 0, 0)
     has_hit = False
 
+    def stop_rpi():
+        global strip, pwm_A, pwm_B
+        clear_strip(strip)
+        time.sleep(0.5)
+        pwm_A.stop()
+        pwm_B.stop()
+        GPIO.cleanup()
+
     def call_rpi():
         global prev_predict, predict
         global cur_pos, prev_pos, has_cockroach
@@ -152,11 +160,7 @@ if __name__ == "__main__":
             motor_servo(SERVOPIN)
             set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
             run_rpi = False
-            clear_strip(strip)
-            time.sleep(0.5)
-            pwm_A.stop()
-            pwm_B.stop()
-            GPIO.cleanup()
+            stop_rpi()
         
         # Update prev
         prev_rgb = cur_rgb
@@ -227,6 +231,7 @@ if __name__ == "__main__":
         
         except Exception as e:
             run_rpi = False
+            stop_rpi()
             logger.error(f"Error: {str(e)}")
             return jsonify({"error": str(e)}), 500
 
@@ -234,6 +239,7 @@ if __name__ == "__main__":
     def stop_program():
         global run_rpi
         run_rpi = False
+        stop_rpi()
         print("STOPPED PROGRAM VIA API CALL")
         return jsonify({"success": True})
     
