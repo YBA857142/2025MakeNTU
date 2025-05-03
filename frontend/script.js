@@ -308,9 +308,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Initial capture
         captureImage();
 
-        fetch('/api/run', {
-            method: "POST"
-        });
+        // fetch('/api/run', {
+        //     method: "POST"
+        // });
         
         // Schedule periodic captures
         captureInterval = setInterval(captureImage, intervalSeconds * 1000);

@@ -234,8 +234,8 @@ if __name__ == "__main__":
             return jsonify({"status": "success", "is_running": run_rpi})
         
         except Exception as e:
-            run_rpi = False
-            stop_rpi()
+            # run_rpi = False
+            # stop_rpi()
             logger.error(f"Error: {str(e)}")
             return jsonify({"error": str(e)}), 500
 
