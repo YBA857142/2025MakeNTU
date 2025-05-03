@@ -248,11 +248,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         prevX.push(position[0]);
         prevY.push(position[1]);
-        if (prevX.length >= 5) {
+        if (prevX.length >= 3) {
             let prevXUnsorted = [...prevX];
             prevX.sort();
-            let xMedian = prevX[2];
-            let xIndex = prevXUnsorted.indexOf(prevX[2]);
+            let xMedian = prevX[1];
+            let xIndex = prevXUnsorted.indexOf(prevX[1]);
             let yMedian = prevY[xIndex];
             prevX = [];
             prevY = [];
