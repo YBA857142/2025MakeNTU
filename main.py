@@ -149,7 +149,7 @@ if __name__ == "__main__":
             if has_hit:
                 motor_servo(SERVOPIN)
                 set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
-                run_rpi = False
+                # run_rpi = False
             
             # Update prev
             prev_rgb = cur_rgb
