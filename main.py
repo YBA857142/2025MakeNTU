@@ -225,7 +225,7 @@ if __name__ == "__main__":
             print(raw_pos, raw_rgb, has_cockroach)
             call_rpi()
 
-            run_rpi = True
+            # run_rpi = True
             
             return jsonify({"status": "success", "is_running": run_rpi})
         
@@ -246,8 +246,8 @@ if __name__ == "__main__":
     @app.route('/api/run', methods=['POST'])
     def run_program():
         global run_rpi
-        run_rpi = True
-        print("STARTED PROGRAM VIA API CALL")
+        # run_rpi = True
+        # print("STARTED PROGRAM VIA API CALL")
         return jsonify({"success": True})
 
     # For development only - use a production WSGI server in production
