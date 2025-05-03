@@ -60,11 +60,14 @@ function findEllipse(canvasId) {
             angle: rotatedRect.angle
             };
             const area = Math.PI * (ellipse.axes.width / 2) * (ellipse.axes.height / 2);
-            if (area > 50 && area < 1500) {
+            if (area > 300 && area < 1500) {
                 if (ellipse.axes.width > 30 || ellipse.axes.height > 30) {
                     continue
                 }
                 if (ellipse.center.y < Math.floor(canvas.height / 10)) {
+                    continue;
+                }
+                if (ellipse.center.y > Math.floor(canvas.height * 8.5 / 10)) {
                     continue;
                 }
                 if (area > maxArea) {
@@ -93,7 +96,7 @@ function wait50Milliseconds() {
 }
 
 function coordinateConversion(x, y, maxX, maxY) {
-    return [Math.floor(x - maxX / 2), Math.max(maxY - y, 0)];
+    return [Math.floor(x - maxX / 2) + 1, Math.max(maxY - y + 150, 0) + 1];
 }
 
 function findColor(canvas, context) {
@@ -231,15 +234,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Send the image to the server
         
         color = findColor(canvas, context);
-        // await sendPostionToServer(position, color, hasCockroach);
+        // await collectPositions(position, color, hasCockroach);
         showStatus(hasCockroach ? `Cockroach Position (${position[0]}, ${position[1]}) Sent!` : `No Cockroach!`, 'success');
-            
-        
         return;
     }
+
+    let prevX = [];
+    let prevY = [];
+    async function collectPositions(position, color, hasCockroach) {
+        if (!hasCockroach) {
+            sendPositionToServer(position, color, hasCockroach);
+            return;
+        }
+        prevX.push(position[0]);
+        prevY.push(position[1]);
+        if (prevX.length >= 3) {
+            let prevXUnsorted = [...prevX];
+            prevX.sort();
+            let xMedian = prevX[1];
+            let xIndex = prevXUnsorted.indexOf(prevX[1]);
+            let yMedian = prevY[xIndex];
+            prevX = [...prevXUnsorted];
+            prevX.shift();
+            prevY.shift();
+            sendPositionToServer([xMedian, yMedian], color, hasCockroach)
+        }
+    }
     
-    // Send image to server
-    async function sendPostionToServer(position, color, hasCockroach) {
+    // Send position to server
+    async function sendPositionToServer(position, color, hasCockroach) {
         try {
             // Remove the data:image/jpeg;base64, prefix to get just the base64 data
                         
@@ -290,9 +313,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Initial capture
         captureImage();
 
-        fetch('/api/run', {
-            method: "POST"
-        });
+        // fetch('/api/run', {
+        //     method: "POST"
+        // });
         
         // Schedule periodic captures
         captureInterval = setInterval(captureImage, intervalSeconds * 1000);
@@ -304,9 +327,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     function stopCapture() {
         clearInterval(captureInterval);
 
-        fetch('/api/stop', {
-            method: "POST"
-        });
+        // fetch('/api/stop', {
+        //     method: "POST"
+        // });
         
         showStatus('Capture stopped', 'success');
     }
