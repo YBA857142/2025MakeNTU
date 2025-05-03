@@ -60,9 +60,14 @@ function findEllipse(canvasId) {
             angle: rotatedRect.angle
             };
             const area = Math.PI * (ellipse.axes.width / 2) * (ellipse.axes.height / 2);
-            if (area > maxArea) {
-            maxArea = area;
-            largestEllipse = ellipse;
+            if (area > 50 && area < 300) {
+                if (ellipse.axes.width > 30 || ellipse.axes.height > 30) {
+                    continue
+                }
+                if (area > maxArea) {
+                    maxArea = area;
+                    largestEllipse = ellipse;
+                }
             }
             contour.delete();
         }
@@ -84,7 +89,29 @@ function wait50Milliseconds() {
     })
 }
 
+function coordinateConversion(x, y, maxX, maxY) {
+    return [x, Math.max(maxY - y, 0)];
+}
 
+function findColor(canvas, context) {
+    let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    let data = imageData.data;
+    let totalRed = 0;
+    let totalGreen = 0;
+    let totalBlue = 0;
+    let count = 0;
+    for (let i = 0; i < data.length; i += 4) {
+        totalRed += data[i];
+        totalGreen += data[i + 1];
+        totalBlue += data[i + 2];
+        count++;
+    }
+
+    let averageRed = Math.floor(totalRed / count);
+    let averageGreen = Math.floor(totalGreen / count);
+    let averageBlue = Math.floor(totalBlue / count);
+    return [averageRed, averageGreen, averageBlue];
+}
 
 // Main function
 document.addEventListener('DOMContentLoaded', async () => {
@@ -180,10 +207,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     
     // Capture image from video
-    function captureImage() {
+    async function captureImage() {
         // Draw current video frame to canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         let ellipse = findEllipse(canvas);
+        let hasCockroach = false;
+        let position = [0, 0];
+        let color = [0, 0, 0];
         if (ellipse) {
             // Draw ellipse on canvas
             context.beginPath();
@@ -191,43 +221,44 @@ document.addEventListener('DOMContentLoaded', async () => {
             context.strokeStyle = 'red';
             context.lineWidth = 2;
             context.stroke();
+            hasCockroach = true
+            position = coordinateConversion(ellipse.center.x, ellipse.center.y, canvas.width, canvas.height);
         }
         
-        // Convert canvas to image data URL
-        const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-        
         // Send the image to the server
-        // sendImageToServer(imageDataUrl);
         
-        return imageDataUrl;
+        color = findColor(canvas, context);
+        await sendPostionToServer(position, color, hasCockroach);
+        
+        return;
     }
     
     // Send image to server
-    async function sendImageToServer(imageDataUrl) {
+    async function sendPostionToServer(position, color, hasCockroach) {
         try {
             // Remove the data:image/jpeg;base64, prefix to get just the base64 data
-            const base64Data = imageDataUrl.split(',')[1];
-            
-            const response = await fetch('/api/image', {
+                        
+            const response = await fetch('/api/position', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    timestamp: new Date().toISOString(),
-                    imageData: base64Data
+                    position: position,
+                    color: color,
+                    has_cockroach: hasCockroach
                 })
             });
             
             if (response.ok) {
                 const result = await response.json();
-                showStatus(`Image sent successfully at ${new Date().toLocaleTimeString()}`, 'success');
+                showStatus(hasCockroach ? `Cockroach Position (${position[0]}, ${position[1]}) Sent!` : `No Cockroach!`, 'success');
             } else {
-                showStatus(`Error sending image: ${response.statusText}`, 'error');
+                showStatus(`Error sending data: ${response.statusText}`, 'error');
             }
         } catch (err) {
-            showStatus(`Error sending image: ${err.message}`, 'error');
-            console.error('Error sending image:', err);
+            showStatus(`Error sending data: ${err.message}`, 'error');
+            console.error('Error sending data:', err);
         }
     }
     

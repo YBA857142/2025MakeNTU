@@ -130,15 +130,29 @@ def call_rpi():
     global SERVOPIN
     global run_rpi
 
+    # If cockroach is hit, return
+    if not run_rpi:
+        return
+
+    # Only one image is captured
+    if prev_pos == (-1, -1):
+        prev_pos = cur_pos
+        prev_rgb = cur_rgb
+        return
+    
     prev_predict = predict
     has_hit = cur_pos[0] ** 2 + cur_pos[1] ** 2 <= r
     predict = motor_control(prev_pos, cur_pos, has_cockroach, prev_predict, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
     set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
-    time.sleep(0.1)
+    # time.sleep(0.1)
     if has_hit:
         motor_servo(SERVOPIN)
         set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
         run_rpi = False
+    
+    # Update prev
+    prev_rgb = cur_rgb
+    prev_pos = cur_pos
 
 """
 ███████╗██╗      █████╗ ███████╗██╗  ██╗
@@ -162,37 +176,42 @@ def serve_file(path):
     else:
         return "404 Not Found", 404
 
-# API Post endpoint for receiving images
-@app.route('/api/image', methods=['POST'])
-def receive_image():
+# API Post endpoint for receiving cockroach position
+# position: (x, y)
+# color: (r, g, b)
+# has_cockroach: Boolean
+@app.route('/api/position', methods=['POST'])
+def receive_position():
+    global cur_pos
+    global cur_rgb
+    global has_cockroach
+
     try:
         data = request.json
         
-        if not data or 'imageData' not in data:
-            return jsonify({"error": "No image data received"}), 400
+        if (not data 
+            or 'position' not in data
+            or 'color' not in data
+            or 'has_cockroach' not in data
+        ):
+            return jsonify({"error": "No position data received"}), 400
         
-        # Get image data and timestamp
-        image_data = data.get('imageData')
-        timestamp = int(round(datetime.now().timestamp() * 1000))
+        # Get data for call_rpi()
+        raw_pos = data.get("position")
+        raw_rgb = data.get("color")
+        has_cockroach = True if data.get("has_cockroach") else False
+        try:
+            cur_pos = (raw_pos[0], raw_pos[1])
+        except:
+            return jsonify({"error": "Wrong position format"}), 400
+        try:
+            cur_rgb = (raw_rgb[0], raw_rgb[1], raw_rgb[2])
+        except:
+            return jsonify({"error": "Wrong color format"})
         
-        # Save the image to disk
-        filename = f"image_{timestamp}.jpg"
-        file_path = os.path.join(IMAGES_DIR, filename)
+        call_rpi()
         
-        # Decode base64 and save to file
-        with open(file_path, 'wb') as f:
-            f.write(base64.b64decode(image_data))
-        
-        logger.info(f"Image saved: {filename}")
-
-        # Process Image and Call RPI
-        
-        return jsonify({
-            "status": "success",
-            "message": "Image received and saved",
-            "filename": filename,
-            "timestamp": timestamp
-        })
+        return jsonify({"status": "success"})
     
     except Exception as e:
         logger.error(f"Error processing image: {str(e)}")
