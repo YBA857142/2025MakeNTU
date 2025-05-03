@@ -60,11 +60,11 @@ function findEllipse(canvasId) {
             angle: rotatedRect.angle
             };
             const area = Math.PI * (ellipse.axes.width / 2) * (ellipse.axes.height / 2);
-            if (area > 50 && area < 1000) {
+            if (area > 50 && area < 1500) {
                 if (ellipse.axes.width > 30 || ellipse.axes.height > 30) {
                     continue
                 }
-                if (y < Math.floor(canvas.height / 10)) {
+                if (ellipse.center.y < Math.floor(canvas.height / 10)) {
                     continue;
                 }
                 if (area > maxArea) {
