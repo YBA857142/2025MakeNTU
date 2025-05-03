@@ -254,8 +254,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             let xMedian = prevX[1];
             let xIndex = prevXUnsorted.indexOf(prevX[1]);
             let yMedian = prevY[xIndex];
-            prevX = [];
-            prevY = [];
+            prevX = [...prevXUnsorted];
+            prevX.shift();
+            prevY.shift();
             await sendPositionToServer([xMedian, yMedian], color, hasCockroach)
         }
     }
