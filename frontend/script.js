@@ -231,7 +231,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Send the image to the server
         
         color = findColor(canvas, context);
-        await sendPostionToServer(position, color, hasCockroach);
+        // await sendPostionToServer(position, color, hasCockroach);
+        showStatus(hasCockroach ? `Cockroach Position (${position[0]}, ${position[1]}) Sent!` : `No Cockroach!`, 'success');
+            
         
         return;
     }
