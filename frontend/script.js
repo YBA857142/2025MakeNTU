@@ -72,7 +72,7 @@ function findEllipse(canvasId) {
                 if (ellipse.center.y > upperMax) {
                     continue;
                 }
-                const threshold = 1200 * (upperMax - ellipse.center.y) / (upperMax - lowerMax) + 300;
+                const threshold = 1200 * (ellipse.center.y - lowerMax) / (upperMax - lowerMax) + 300;
                 if (area > threshold) {
                     continue;
                 }
