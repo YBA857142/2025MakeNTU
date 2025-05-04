@@ -326,6 +326,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let prevX = [];
     let prevY = [];
     async function collectPositions(position, color, hasCockroach) {
+        sendPositionToServer(position, color, hasCockroach);
+        return;
         if (!hasCockroach) {
             sendPositionToServer(position, color, hasCockroach);
             return;
