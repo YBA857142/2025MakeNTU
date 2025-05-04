@@ -60,21 +60,27 @@ function findEllipse(canvasId) {
             angle: rotatedRect.angle
             };
             const area = Math.PI * (ellipse.axes.width / 2) * (ellipse.axes.height / 2);
-            if (area > 300 && area < 1500) {
+            lowerMax = Math.floor(canvas.height * 3 / 10)
+            upperMax = Math.floor(canvas.height * 8.5 / 10)
+            if (area > 300) {
                 if (ellipse.axes.width > 30 || ellipse.axes.height > 30) {
                     continue
                 }
-                if (ellipse.center.y < Math.floor(canvas.height / 10)) {
+                if (ellipse.center.y < lowerMax) {
                     continue;
                 }
-                if (ellipse.center.y > Math.floor(canvas.height * 8.5 / 10)) {
+                if (ellipse.center.y > upperMax) {
+                    continue;
+                }
+                threshold = 1200 * (ellipse.center.y - lowerMax) / (upperMax - lowerMax) + 300;
+                if (area > threshold) {
                     continue;
                 }
                 if (area > maxArea) {
                     maxArea = area;
                     largestEllipse = ellipse;
                 }
-            }
+            // }
             contour.delete();
         }
     }
