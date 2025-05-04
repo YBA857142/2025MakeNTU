@@ -62,8 +62,8 @@ function findEllipse(canvasId) {
             const area = Math.PI * (ellipse.axes.width / 2) * (ellipse.axes.height / 2);
             const lowerMax = Math.floor(canvas.height * 3 / 10);
             const upperMax = Math.floor(canvas.height * 8.5 / 10);
-            if (area > 300) {
-                if (ellipse.axes.width > 30 || ellipse.axes.height > 30) {
+            if (area > 200) {
+                if (ellipse.axes.width > 15 || ellipse.axes.height > 15) {
                     continue;
                 }
                 if (ellipse.center.y < lowerMax) {
@@ -72,7 +72,7 @@ function findEllipse(canvasId) {
                 if (ellipse.center.y > upperMax) {
                     continue;
                 }
-                const threshold = 1200 * (ellipse.center.y - lowerMax) / (upperMax - lowerMax) + 800;
+                const threshold = 1500 * (ellipse.center.y - lowerMax) / (upperMax - lowerMax) + 800;
                 if (area > threshold) {
                     continue;
                 }
