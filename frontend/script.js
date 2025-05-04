@@ -22,7 +22,7 @@ function brownFilter(canvasId) {
     cv.cvtColor(img, hsv, cv.COLOR_RGB2HSV);
   
     const lowerBrown = new cv.Mat(hsv.rows, hsv.cols, hsv.type(), [5, 0, 0, 0]);
-    const upperBrown = new cv.Mat(hsv.rows, hsv.cols, hsv.type(), [70, 255, 60, 255]);
+    const upperBrown = new cv.Mat(hsv.rows, hsv.cols, hsv.type(), [70, 255, 100, 255]);
   
     const mask = new cv.Mat();
     cv.inRange(hsv, lowerBrown, upperBrown, mask);
@@ -60,14 +60,98 @@ function findEllipse(canvasId) {
             angle: rotatedRect.angle
             };
             const area = Math.PI * (ellipse.axes.width / 2) * (ellipse.axes.height / 2);
-            if (area > 300 && area < 1500) {
-                if (ellipse.axes.width > 30 || ellipse.axes.height > 30) {
-                    continue
-                }
-                if (ellipse.center.y < Math.floor(canvas.height / 10)) {
+            const lowerMax = Math.floor(canvas.height * 3 / 10);
+            const upperMax = Math.floor(canvas.height * 8.5 / 10);
+            if (area > 200) {
+                if (ellipse.axes.width > 45 | ellipse.axes.height > 45) {
                     continue;
                 }
-                if (ellipse.center.y > Math.floor(canvas.height * 8.5 / 10)) {
+                if (ellipse.center.y < lowerMax) {
+                    continue;
+                }
+                if (ellipse.center.y > upperMax) {
+                    continue;
+                }
+                const threshold = 1500 * (ellipse.center.y - lowerMax) / (upperMax - lowerMax) + 800;
+                if (area > threshold) {
+                    continue;
+                }
+                if (area > maxArea) {
+                    maxArea = area;
+                    largestEllipse = ellipse;
+                }
+            }
+            contour.delete();
+        }
+    }
+  
+    brownMask.delete();
+    blurred.delete();
+    edges.delete();
+    contours.delete();
+    hierarchy.delete();
+  
+    console.log(largestEllipse);
+    return largestEllipse;
+}// Same brown filter and ellipse detection logic
+function brownFilter(canvasId) {
+    const img = cv.imread(canvasId);  // get OpenCV Mat from canvas
+    const hsv = new cv.Mat();
+    cv.cvtColor(img, hsv, cv.COLOR_RGB2HSV);
+  
+    const lowerBrown = new cv.Mat(hsv.rows, hsv.cols, hsv.type(), [5, 0, 0, 0]);
+    const upperBrown = new cv.Mat(hsv.rows, hsv.cols, hsv.type(), [70, 255, 100, 255]);
+  
+    const mask = new cv.Mat();
+    cv.inRange(hsv, lowerBrown, upperBrown, mask);
+  
+    // Clean up
+    img.delete();
+    hsv.delete();
+    lowerBrown.delete();
+    upperBrown.delete();
+  
+    return mask;
+}
+
+function findEllipse(canvasId) {
+    const brownMask = brownFilter(canvasId);
+    const blurred = new cv.Mat();
+    cv.GaussianBlur(brownMask, blurred, new cv.Size(5, 5), 0);
+    const edges = new cv.Mat();
+    cv.Canny(blurred, edges, 50, 150);
+  
+    const contours = new cv.MatVector();
+    const hierarchy = new cv.Mat();
+    cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+  
+    let largestEllipse = null;
+    let maxArea = 0;
+  
+    for (let i = 0; i < contours.size(); ++i) {
+        const contour = contours.get(i);
+        if (contour.data32S.length / 2 >= 5) { // Ensure at least 5 points for fitEllipse
+            const rotatedRect = cv.fitEllipse(contour);
+            const ellipse = {
+            center: rotatedRect.center,
+            axes: rotatedRect.size,
+            angle: rotatedRect.angle
+            };
+            const area = Math.PI * (ellipse.axes.width / 2) * (ellipse.axes.height / 2);
+            const lowerMax = Math.floor(canvas.height * 3 / 10);
+            const upperMax = Math.floor(canvas.height * 8.5 / 10);
+            if (area > 200) {
+                if (ellipse.axes.width > 45 | ellipse.axes.height > 45) {
+                    continue;
+                }
+                if (ellipse.center.y < lowerMax) {
+                    continue;
+                }
+                if (ellipse.center.y > upperMax) {
+                    continue;
+                }
+                const threshold = 1500 * (ellipse.center.y - lowerMax) / (upperMax - lowerMax) + 800;
+                if (area > threshold) {
                     continue;
                 }
                 if (area > maxArea) {
