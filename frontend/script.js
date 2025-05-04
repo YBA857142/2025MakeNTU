@@ -63,7 +63,7 @@ function findEllipse(canvasId) {
             const lowerMax = Math.floor(canvas.height * 3 / 10);
             const upperMax = Math.floor(canvas.height * 9 / 10);
             if (area > 800) {
-                if (ellipse.axes.width > 45 | ellipse.axes.height > 45) {
+                if (ellipse.axes.width > 70 | ellipse.axes.height > 70) {
                     continue;
                 }
                 if (ellipse.center.y < lowerMax) {
