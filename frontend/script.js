@@ -139,7 +139,7 @@ function findEllipse(canvasId) {
             };
             const area = Math.PI * (ellipse.axes.width / 2) * (ellipse.axes.height / 2);
             const lowerMax = Math.floor(canvas.height * 3 / 10);
-            const upperMax = Math.floor(canvas.height * 8.5 / 10);
+            const upperMax = Math.floor(canvas.height * 18.5 / 20);
             if (area > 200) {
                 if (ellipse.axes.width > 45 | ellipse.axes.height > 45) {
                     continue;
@@ -180,7 +180,7 @@ function wait50Milliseconds() {
 }
 
 function coordinateConversion(x, y, maxX, maxY) {
-    return [Math.floor(x - maxX / 2) + 1, Math.max(maxY - y - 150, 0) + 1];
+    return [Math.floor(x - maxX / 2) + 1, Math.max(maxY - y - 100, 0) + 1];
 }
 
 function findColor(canvas, context) {
