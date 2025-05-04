@@ -22,7 +22,7 @@ function brownFilter(canvasId) {
     cv.cvtColor(img, hsv, cv.COLOR_RGB2HSV);
   
     const lowerBrown = new cv.Mat(hsv.rows, hsv.cols, hsv.type(), [5, 0, 0, 0]);
-    const upperBrown = new cv.Mat(hsv.rows, hsv.cols, hsv.type(), [70, 255, 70, 255]);
+    const upperBrown = new cv.Mat(hsv.rows, hsv.cols, hsv.type(), [70, 255, 100, 255]);
   
     const mask = new cv.Mat();
     cv.inRange(hsv, lowerBrown, upperBrown, mask);
