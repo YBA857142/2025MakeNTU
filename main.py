@@ -156,14 +156,14 @@ if __name__ == "__main__":
         
         prev_predict = predict
         # has_hit = cur_pos[0] ** 2 + cur_pos[1] ** 2 <= r
-        has_hit = cur_pos[1] <= 200
+        has_hit = cur_pos[1] <= 5
         try:
             predict = motor_control(prev_pos, cur_pos, has_cockroach, prev_predict, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
         except Exception as e:
             logger.error(f"Error: {str(e)}")
         set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
         # time.sleep(0.1)
-        if has_hit and counter > 100:
+        if has_hit:
             motor_servo(SERVOPIN)
             time.sleep(2)
             set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
