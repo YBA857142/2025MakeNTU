@@ -19,7 +19,7 @@ def motor_control(c0, c1, has_cockroach, predict, pwm_A, pwm_B, AIN1, AIN2, BIN1
         '''
         back up plan
         '''
-        move(2*phi1/180)
+        move(2*phi1/180, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
         return 2*phi1/180
         
         if delta_phi > 0:
