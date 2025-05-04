@@ -156,7 +156,7 @@ if __name__ == "__main__":
         
         prev_predict = predict
         # has_hit = cur_pos[0] ** 2 + cur_pos[1] ** 2 <= r
-        has_hit = cur_pos[0] <= 5
+        has_hit = cur_pos[1] <= 5
         try:
             predict = motor_control(prev_pos, cur_pos, has_cockroach, prev_predict, pwm_A, pwm_B, AIN1, AIN2, BIN1, BIN2)
         except Exception as e:
