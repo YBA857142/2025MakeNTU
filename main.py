@@ -165,6 +165,7 @@ if __name__ == "__main__":
         # time.sleep(0.1)
         if has_hit and counter > 100:
             motor_servo(SERVOPIN)
+            time.sleep(2)
             set_strip_color(strip, prev_rgb, cur_rgb, has_hit)
             run_rpi = False
             stop_rpi()
